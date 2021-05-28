@@ -1,6 +1,7 @@
 import random
-weapons = ["Sword", "Spell", "Fire"]
-shields = ["Armour", "Magic", "Water"]
+weapons = ["Sword", "Fire"]
+spells = ["Healing","Harming"]
+shields = ["Armor","Shield", "Water"]
 
 class Player1:
   def __init__(self, name):
@@ -13,12 +14,20 @@ class Player1:
       points = random.randint(10,35)
       self.health -= points
 
+  def healing(self):
+        points = random.randint(20, 30)
+        self.health += points
+
   def selectWeapon(self):
-        choice = int(input("Player 1,Choose your weapon 1-Sword, 2-Spell or 3-Fire:  "))
+        choice = int(input("Player 1,Choose your weapon 1-Sword, 2-Fire:  "))
         self.weapon = choice - 1
+  
+  def selectSpell(self):
+        choice = int(input("Player 1, Choose your spell 1-Healing or 2-Harming:  "))
+        self.spell = choice - 1
 
   def selectShield(self):
-        choice = int(input("Player 1, Choose your shield 1-Armour, 2-Magic or 3-Water:  "))
+        choice = int(input("Player 1, Choose your shield 1-Armor, 2-Shield, or 3-Water:  "))
         self.shield = choice - 1
 
 class Player2:
@@ -32,12 +41,21 @@ class Player2:
         points = random.randint(10, 35)
         self.health -= points
 
+    def healing(self):
+        points = random.randint(20, 30)
+        self.health += points
+
     def selectWeapon(self):
-        choice = int(input("Player 2, Choose your weapon 1-Sword, 2-Spell or 3-Fire:  "))
+        choice = int(input("Player 2, Choose your weapon 1-Sword or 2-Fire:  "))
         self.weapon = choice - 1
 
+    def selectSpell(self):
+        choice = int(input("Player 2, Choose your spell 1-Healing or 2-Harming:  "))
+        self.spell = choice - 1
+
+
     def selectShield(self):
-        choice = int(input("Player 2, Choose your shield 1-Armour, 2-Magic or 3-Water:  "))
+        choice = int(input("Player 2, Choose your shield 1-Armor, 2-Shield, or 3-Water:  "))
         self.shield = choice - 1
 
 class Game:
@@ -63,14 +81,15 @@ class Game:
 
 
     def displayResult(self, player, opponent):
-            print("%s used a %s, %s used a %s Shield\n" %(player.name, weapons[player.weapon], opponent.name, shields[opponent.shield]))
+            print("%s used a %s, %s used a %s\n" %(player.name, weapons[player.weapon], opponent.name, shields[opponent.shield]))
             print("%s caused damage to %s\n" %(player.name, opponent.name))
+            print("%s used a %s, %s used a %s Shield\n" % (player.name, spells[player.spell], opponent.name, shields[opponent.shield]))
 
     def takeTurn(self, player, opponent):
 
         # Decision Array
         #
-        #           Armour|  Magic |  Water
+        #           Armour| Shield |  Water
         #           ______|________|_______
         # Sword:    False |  True  |  True
         # Spell:    True  |  False |  True   
@@ -80,6 +99,11 @@ class Game:
         if decisionArray[player.weapon][opponent.shield]:
             opponent.damage()
             currentGame.displayResult(player, opponent)
+        if decisionArray[player.spell][opponent.shield]:
+            opponent.damage()
+        if decisionArray[player.spell]:
+            player.healing()
+        
         else:
             print("\n%s used a %s, %s used a %s Shield" %(player.name, weapons[player.weapon], opponent.name, shields[opponent.shield]))
             print("%s blocked %s's attack - No Damage" %(opponent.name, player.name))
@@ -97,6 +121,7 @@ while not currentGame.gameOver:
     for player in players:
         player.selectWeapon()
         player.selectShield()
+        player.selectSpell()
     currentGame.newRound()
     currentGame.takeTurn(human, human2)
     currentGame.takeTurn(human2, human)
